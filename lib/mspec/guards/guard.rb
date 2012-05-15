@@ -144,7 +144,7 @@ class SpecGuard
   end
 
   def windows?(sym, key)
-    sym == :windows && !key.match(/(mswin|mingw)/).nil?
+    sym == :windows && !key.match(/(mswin|mingw|winapi)/).nil?
   end
 
   def platform?(*args)
