@@ -8,7 +8,7 @@ class SpecTag
   def parse(string)
     m = /^([^()#:]+)(\(([^)]+)?\))?:(.*)$/.match string
     @tag, @comment, description = m.values_at(1, 3, 4) if m
-    @description = unescape description
+    @description = eval description
   end
 
   def unescape(str)
@@ -23,7 +23,7 @@ class SpecTag
   end
 
   def to_s
-    "#{@tag}#{ "(#{@comment})" if @comment }:#{escape @description}"
+    "#{@tag}#{ "(#{@comment})" if @comment }:#{@description.inspect}"
   end
 
   def ==(o)
