@@ -96,8 +96,8 @@ class DottedFormatter
     @exceptions.each do |exc|
       outcome = exc.failure? ? "FAILED" : "ERROR"
       print "\n#{count += 1})\n#{exc.description} #{outcome}\n"
-      print exc.message, "\n"
-      print exc.backtrace, "\n"
+      exc.print
+      print "\n"
     end
     print "\n#{@timer.format}\n\n#{@tally.format}\n"
   end

@@ -30,6 +30,14 @@ class ExceptionState
     end
   end
 
+  def print
+    if @exception.respond_to? :print
+      @exception.print STDOUT
+    else
+      message + "\n" + backtrace
+    end
+  end
+  
   def backtrace
     @backtrace_filter ||= MSpecScript.config[:backtrace_filter]
 
