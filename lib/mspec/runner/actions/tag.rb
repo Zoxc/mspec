@@ -58,10 +58,7 @@ class TagAction < ActionFilter
   # the example. See +TagAction+ for a description of the actions.
   def after(state)
     if self === state.description and outcome?
-      tag = SpecTag.new
-      tag.tag = @tag
-      tag.comment = @comment
-      tag.description = state.description
+      tag = SpecTag.new(@tag, @comment, state.description)
 
       case @action
       when :add

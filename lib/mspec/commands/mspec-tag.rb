@@ -10,7 +10,7 @@ class MSpecTag < MSpecScript
     super
 
     config[:tagger]  = :add
-    config[:tag]     = 'fails:'
+    config[:tag]     = 'fails'
     config[:outcome] = :fail
     config[:ltags]   = []
   end
@@ -43,12 +43,12 @@ class MSpecTag < MSpecScript
     options.on("-N", "--add", "TAG",
        "Add TAG with format 'tag' or 'tag(comment)' (see -Q, -F, -L)") do |o|
       config[:tagger] = :add
-      config[:tag] = "#{o}:"
+      config[:tag] = o
     end
     options.on("-R", "--del", "TAG",
        "Delete TAG (see -Q, -F, -L)") do |o|
       config[:tagger] = :del
-      config[:tag] = "#{o}:"
+      config[:tag] = o
       config[:outcome] = :pass
     end
     options.on("-Q", "--pass", "Apply action to specs that pass (default for --del)") do
@@ -100,9 +100,9 @@ class MSpecTag < MSpecScript
   def register
     case config[:tagger]
     when :add, :del
-      tag = SpecTag.new config[:tag]
-      tagger = TagAction.new(config[:tagger], config[:outcome], tag.tag, tag.comment,
+      tagger = TagAction.new(config[:tagger], config[:outcome], config[:tag], nil,
                              config[:atags], config[:astrings])
+      TagProtectAction.new(config[:tagger], config[:outcome], config[:tag]).register
     when :list, :list_all
       tagger = TagListAction.new config[:tagger] == :list_all ? nil : config[:ltags]
       MSpec.register_mode :pretend

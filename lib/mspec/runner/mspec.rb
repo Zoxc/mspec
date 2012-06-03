@@ -52,12 +52,21 @@ module MSpec
       @env.extend MSpec
 
       store :file, file
+
+      next if files_filtered?(file)
+
       actions :load
       protect("loading #{file}") { Kernel.load file }
       actions :unload
     end
   end
 
+  def self.files_filtered?(file)
+    excl = retrieve(:filter_file) || []
+    included = excl.empty? || !excl.any? { |f| f === file }
+    not included
+  end
+  
   def self.actions(action, *args)
     actions = retrieve(action)
     actions.each { |obj| obj.send action, *args } if actions
@@ -66,6 +75,7 @@ module MSpec
   def self.protect(location, &block)
     begin
       @env.instance_eval(&block)
+      actions :no_exception
       return true
     rescue SystemExit
       raise
@@ -274,7 +284,7 @@ module MSpec
 
   # Returns a list of tags matching any tag string in +keys+ based
   # on the return value of <tt>keys.include?("tag_name")</tt>
-  def self.read_tags(keys)
+  def self.read_tags(keys, tag_class)
     tags = []
     file = tags_file
     if File.exist? file
@@ -282,8 +292,8 @@ module MSpec
         f.each_line do |line|
           line.chomp!
           next if line.empty?
-          tag = SpecTag.new line.chomp
-          tags << tag if keys.include? tag.tag
+          tag = Tag.parse line.chomp
+          tags << tag if (keys.include? tag.tag and tag_class === tag)
         end
       end
     end
@@ -322,13 +332,13 @@ module MSpec
   # file if it is empty.
   def self.delete_tag(tag)
     deleted = false
-    pattern = /#{tag.tag}.*#{Regexp.escape(tag.escape(tag.description))}/
     file = tags_file
     if File.exist? file
       lines = IO.readlines(file)
       File.open(file, "wb") do |f|
         lines.each do |line|
-          unless pattern =~ line.chomp
+          line_tag = Tag.parse line.chomp
+          unless line_tag == tag
             f.puts line unless line.empty?
           else
             deleted = true

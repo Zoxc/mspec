@@ -20,7 +20,7 @@ class TagPurgeAction < TagListAction
   # Creates a MatchFilter for all tags.
   def load
     @filter = nil
-    @tags = MSpec.read_tags self
+    @tags = MSpec.read_tags self, SpecTag
     desc = @tags.map { |t| t.description }
     @filter = MatchFilter.new(nil, *desc) unless desc.empty?
   end

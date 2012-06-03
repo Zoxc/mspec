@@ -73,6 +73,9 @@ class MSpecCI < MSpecScript
     filter = TagFilter.new(:exclude, *tags)
     filter.register
 
+    filter = FileFilter.new(*tags)
+    filter.register
+
     MSpec.process
     exit MSpec.exit_code
   end

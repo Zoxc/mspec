@@ -32,7 +32,7 @@ class TagListAction
   # Creates a MatchFilter for specific tags or for all tags.
   def load
     @filter = nil
-    desc = MSpec.read_tags(@tags || self).map { |t| t.description }
+    desc = MSpec.read_tags(@tags || self, SpecTag).map { |t| t.description }
     @filter = MatchFilter.new(nil, *desc) unless desc.empty?
   end
 
