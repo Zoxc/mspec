@@ -102,7 +102,7 @@ class MSpecTag < MSpecScript
     when :add, :del
       tagger = TagAction.new(config[:tagger], config[:outcome], config[:tag], nil,
                              config[:atags], config[:astrings])
-      TagProtectAction.new(config[:tagger], config[:outcome], config[:tag]).register
+      TagFileAction.new(config[:tagger], config[:outcome], config[:tag]).register
     when :list, :list_all
       tagger = TagListAction.new config[:tagger] == :list_all ? nil : config[:ltags]
       MSpec.register_mode :pretend

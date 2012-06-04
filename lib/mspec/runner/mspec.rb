@@ -75,7 +75,6 @@ module MSpec
   def self.protect(location, &block)
     begin
       @env.instance_eval(&block)
-      actions :no_exception
       return true
     rescue SystemExit
       raise
@@ -337,7 +336,8 @@ module MSpec
       lines = IO.readlines(file)
       File.open(file, "wb") do |f|
         lines.each do |line|
-          line_tag = Tag.parse line.chomp
+          line.chomp!
+          line_tag = Tag.parse line
           unless line_tag == tag
             f.puts line unless line.empty?
           else
