@@ -1,32 +1,73 @@
-class SpecTag
-  attr_accessor :tag, :comment, :description
+class Tag
+  attr_accessor :tag
+  
+  ClassMap = {}
 
-  def initialize(string=nil)
-    parse(string) if string
+  def self.inherited(subclass)
+    ClassMap[subclass.to_s] = subclass
   end
 
-  def parse(string)
-    m = /^([^()#:]+)(\(([^)]+)?\))?:(.*)$/.match string
-    @tag, @comment, description = m.values_at(1, 3, 4) if m
-    @description = eval description
+  def initialize(tag)
+    @tag = tag
   end
 
-  def unescape(str)
-    return unless str
-    str = str[1..-2] if str[0] == ?" and str[-1] == ?"
-    str.gsub(/\\n/, "\n")
+  def self.parse(string)
+    klass, *args = string.split(':').map { |c| unescape(c) }
+    ClassMap[klass].new(*args)
   end
 
-  def escape(str)
-    str = %["#{str.gsub(/\n/, '\n')}"] if /\n/ =~ str
-    str
+  def data
+    []
+  end
+  
+  def self.unescape(str)
+    i = 0
+    result = ""
+    
+    while i < str.size do
+      c = str[i]
+      i += 1
+      if c == ?\\
+        if str[i] == ?\\
+          result << '\\'
+          i += 1
+        else
+          result << str[i, 4].to_i(16).chr
+          i += 4
+        end
+      else
+        result << c
+      end
+    end
+    
+    result
+  end
+
+  def self.escape(str)
+    result = ""
+    str.each_char do |c|
+      ord = c.ord
+      case ord
+        when 32..57, 59..91, 93..126
+          result << c
+        when 58
+          result << '\\003A'
+        when 92
+          result << '\\\\'
+        when 93..126
+          result << c
+        else
+          result << '\\' << ord.to_s(16).rjust(4, "0")
+      end
+    end
+    result
   end
 
   def to_s
-    "#{@tag}#{ "(#{@comment})" if @comment }:#{@description.inspect}"
+    [self.class, @tag, *data].map { |c| Tag.escape(c.to_s) }.join(':')
   end
 
   def ==(o)
-    @tag == o.tag and @comment == o.comment and @description == o.description
+    self.class == o.class && @tag == o.tag
   end
 end
