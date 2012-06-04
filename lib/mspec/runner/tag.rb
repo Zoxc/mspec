@@ -1,24 +1,32 @@
-class Tag
-  attr_accessor :tag
+class SpecTag
+  attr_accessor :tag, :comment, :description
 
-  def initialize(tag)
-    @tag = tag
+  def initialize(string=nil)
+    parse(string) if string
   end
 
-  def self.parse(string)
-    klass, *args = eval string
-    klass.new(*args)
+  def parse(string)
+    m = /^([^()#:]+)(\(([^)]+)?\))?:(.*)$/.match string
+    @tag, @comment, description = m.values_at(1, 3, 4) if m
+    @description = eval description
   end
 
-  def data
-    []
+  def unescape(str)
+    return unless str
+    str = str[1..-2] if str[0] == ?" and str[-1] == ?"
+    str.gsub(/\\n/, "\n")
+  end
+
+  def escape(str)
+    str = %["#{str.gsub(/\n/, '\n')}"] if /\n/ =~ str
+    str
   end
 
   def to_s
-    [self.class, @tag, *data].inspect
+    "#{@tag}#{ "(#{@comment})" if @comment }:#{@description.inspect}"
   end
 
   def ==(o)
-    self.class == o.class && @tag == o.tag
+    @tag == o.tag and @comment == o.comment and @description == o.description
   end
 end

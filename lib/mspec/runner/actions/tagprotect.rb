@@ -7,6 +7,7 @@ class TagProtectAction
     @tag = tag
     @report = []
     @ignore = false
+    @count = 0
   end
   
   def before(state)
@@ -39,16 +40,17 @@ class TagProtectAction
         changed = MSpec.delete_tag tag
       end
 
-      @report << MSpec.retrieve(:file) if changed
+      @report << "#{@count}) #{MSpec.retrieve(:file)}" if changed
     end
   end
 
   def no_exception
-    done false
+    done nil
   end
 
   def exception(exception)
-    done true
+    @count += 1
+    done exception
   end
 
   def report

@@ -30,6 +30,7 @@ class TagAction < ActionFilter
     @comment = comment
     @report = []
     @exception = false
+    @count = 0
   end
 
   # Returns true if there are no _tag_ or _description_ filters. This
@@ -50,6 +51,7 @@ class TagAction < ActionFilter
   # Callback for the MSpec :exception event. Sets the +#exception?+
   # flag to true.
   def exception(exception)
+    @count += 1
     @exception = true
   end
 
@@ -67,7 +69,7 @@ class TagAction < ActionFilter
         changed = MSpec.delete_tag tag
       end
 
-      @report << state.description if changed
+      @report << ((@exception ? "#{@count}) " : "") + state.description) if changed
     end
   end
 
