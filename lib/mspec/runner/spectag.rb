@@ -5,8 +5,8 @@ class SpecTag < Tag
 
   def initialize(tag, comment, description)
     super tag
-    @comment = comment
-    @description = description
+    @comment = comment.to_s
+    @description = description.to_s
   end
 
   def data

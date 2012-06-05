@@ -8,7 +8,7 @@ class Tag
   end
 
   def initialize(tag)
-    @tag = tag
+    @tag = tag.to_s
   end
 
   def self.parse(string)
@@ -64,7 +64,7 @@ class Tag
   end
 
   def to_s
-    [self.class, @tag, *data].map { |c| Tag.escape(c.to_s) }.join(':')
+    [self.class.to_s, @tag, *data].map { |c| Tag.escape(c) }.join(':')
   end
 
   def ==(o)
