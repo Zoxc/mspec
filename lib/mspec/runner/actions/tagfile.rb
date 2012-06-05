@@ -85,18 +85,20 @@ class TagFileAction
   end
 
   def register
+    MSpec.register :load, self
     MSpec.register :unload, self
-    MSpec.register :before,    self
-    MSpec.register :after,     self
+    MSpec.register :before, self
+    MSpec.register :after, self
     MSpec.register :exception, self
-    MSpec.register :finish,    self
+    MSpec.register :finish, self
   end
 
   def unregister
+    MSpec.unregister :load, self
     MSpec.unregister :unload, self
-    MSpec.unregister :before,    self
-    MSpec.unregister :after,     self
+    MSpec.unregister :before, self
+    MSpec.unregister :after, self
     MSpec.unregister :exception, self
-    MSpec.unregister :finish,    self
+    MSpec.unregister :finish, self
   end
 end
